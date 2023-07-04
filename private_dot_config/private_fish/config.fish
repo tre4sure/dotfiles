@@ -17,4 +17,4 @@ fish_add_path ~/go/bin
 abbr vim nvim
 abbr vi nvim
 abbr v nvim
-abbr ec "chezmoi edit --apply"
+abbr ce "chezmoi edit --apply"
