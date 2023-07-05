@@ -42,12 +42,12 @@ return {
       return {}
     end,
   },
-    {
+  {
     "hrsh7th/nvim-cmp",
     dependencies = {
       "hrsh7th/cmp-emoji",
     },
-    ---@param opts cmp.ConfigSchema
+
     opts = function(_, opts)
       local has_words_before = function()
         unpack = unpack or table.unpack
@@ -84,57 +84,75 @@ return {
       })
     end,
   },
-{
-  "neovim/nvim-lspconfig",
-  opts = {
-    servers = {
-      gopls = {
-        settings = {
-          gopls = {
-            semanticTokens = true,
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        gopls = {
+          settings = {
+            gopls = {
+              semanticTokens = true,
+            },
           },
         },
       },
-    },
-    setup = {
-      gopls = function()
-        -- workaround for gopls not supporting semantictokensprovider
-        -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
-        require("lazyvim.util").on_attach(function(client, _)
-          if client.name == "gopls" then
-            if not client.server_capabilities.semanticTokensProvider then
-              local semantic = client.config.capabilities.textDocument.semanticTokens
-              client.server_capabilities.semanticTokensProvider = {
-                full = true,
-                legend = {
-                  tokenTypes = semantic.tokenTypes,
-                  tokenModifiers = semantic.tokenModifiers,
-                },
-                range = true,
-              }
+      setup = {
+        gopls = function()
+          -- workaround for gopls not supporting semantictokensprovider
+          -- https://github.com/golang/go/issues/54531#issuecomment-1464982242
+          require("lazyvim.util").on_attach(function(client, _)
+            if client.name == "gopls" then
+              if not client.server_capabilities.semanticTokensProvider then
+                local semantic = client.config.capabilities.textDocument.semanticTokens
+                client.server_capabilities.semanticTokensProvider = {
+                  full = true,
+                  legend = {
+                    tokenTypes = semantic.tokenTypes,
+                    tokenModifiers = semantic.tokenModifiers,
+                  },
+                  range = true,
+                }
+              end
             end
-          end
-        end)
-        -- end workaround
-      end,
+          end)
+          -- end workaround
+        end,
+      },
     },
   },
-},
   {
     "jose-elias-alvarez/null-ls.nvim",
     opts = function(_, opts)
       local nls = require("null-ls")
       vim.list_extend(opts.sources, {
         nls.builtins.formatting.stylua,
-          nls.builtins.code_actions.gomodifytags,
+        nls.builtins.code_actions.gomodifytags,
 
-          nls.builtins.formatting.gofmt,
-          nls.builtins.formatting.gofumpt,
-          nls.builtins.formatting.goimports,
-          nls.builtins.formatting.goimports_reviser,
-          nls.builtins.formatting.golines,
-        }
-      )
+        nls.builtins.formatting.gofmt,
+        nls.builtins.formatting.gofumpt,
+        nls.builtins.formatting.goimports,
+        nls.builtins.formatting.goimports_reviser,
+        nls.builtins.formatting.golines,
+      })
     end,
-  }
+  },
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    opts = {
+      -- Makes a best effort to setup the various debuggers with
+      -- reasonable debug configurations
+      automatic_installation = true,
+
+      -- You can provide additional configuration to the handlers,
+      -- see mason-nvim-dap README for more information
+      handlers = {},
+
+      -- You'll need to check that you have the required things installed
+      -- online, please don't ask me how to install them :)
+      ensure_installed = {
+        -- Update this to ensure that you have the debuggers for the langs you want
+        "delve",
+      },
+    },
+  },
 }
