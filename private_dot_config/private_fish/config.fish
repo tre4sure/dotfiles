@@ -13,6 +13,7 @@ fish_add_path ~/scripts/
 fish_add_path /usr/local/go/bin
 fish_add_path ~/go/bin
 
+abbr sf "source ~/.config/fish/config.fish"
 
 abbr vim nvim
 abbr vi nvim
