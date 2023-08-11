@@ -1,18 +1,43 @@
 return {
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "catppuccin-macchiato",
+    },
+  },
   {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
+        "lua-language-server",
         "stylua",
 
         -- go stuff
         "gopls",
-        -- "gofmt",
         "gofumpt",
         "goimports",
-        -- "goimports_reviser",
-        -- "goline",
         "gomodifytags",
+        "staticcheck",
+        "revive",
+        "json-to-struct",
+        "impl",
+        "iferr",
+        "gospel",
+        "golines",
+        "golangci-lint-langserver",
+        "golangci-lint",
+        "goimports-reviser",
+        "gofumpt",
+        "goimports",
+        "gomodifytags",
+        "gopls",
+        "json-lsp",
+
+        -- python stuff
+        "autopep8",
+        "flake8",
+        "pylint",
       },
     },
   },
@@ -33,6 +58,7 @@ return {
 
         "python",
         "json",
+        "jsonc",
       },
     },
   },
@@ -125,34 +151,28 @@ return {
     opts = function(_, opts)
       local nls = require("null-ls")
       vim.list_extend(opts.sources, {
+        -- lua
         nls.builtins.formatting.stylua,
-        nls.builtins.code_actions.gomodifytags,
 
+        -- golang
+        nls.builtins.code_actions.gomodifytags,
+        nls.builtins.code_actions.impl,
+        -- nls.builtins.diagnostics.golangci_lint,
+        -- nls.builtins.diagnostics.gospel,
+        -- 提示给变量和方法添加注释
+        -- nls.builtins.diagnostics.revive,
+        -- nls.builtins.diagnostics.staticcheck,
         nls.builtins.formatting.gofmt,
         nls.builtins.formatting.gofumpt,
         nls.builtins.formatting.goimports,
         nls.builtins.formatting.goimports_reviser,
-        nls.builtins.formatting.golines,
+        -- nls.builtins.formatting.golines,
+
+        -- python
+        nls.builtins.formatting.autopep8,
+        nls.builtins.diagnostics.flake8,
+        -- nls.builtins.diagnostics.pylint,
       })
     end,
-  },
-  {
-    "jay-babu/mason-nvim-dap.nvim",
-    opts = {
-      -- Makes a best effort to setup the various debuggers with
-      -- reasonable debug configurations
-      automatic_installation = true,
-
-      -- You can provide additional configuration to the handlers,
-      -- see mason-nvim-dap README for more information
-      handlers = {},
-
-      -- You'll need to check that you have the required things installed
-      -- online, please don't ask me how to install them :)
-      ensure_installed = {
-        -- Update this to ensure that you have the debuggers for the langs you want
-        "delve",
-      },
-    },
   },
 }
