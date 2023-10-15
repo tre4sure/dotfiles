@@ -5,13 +5,14 @@ end
 set -gx EDITOR nvim
 set -gx VISUAL $EDITOR
 
-set -Ux fish_user_paths # set -U make effective throughout the entire system
-
+set -gx fish_user_paths # set -U make effective throughout the entire system
+# Path
 fish_add_path ~/scripts/
+# fish_add_path /usr/local/go/bin
 
-
-fish_add_path /usr/local/go/bin
-fish_add_path ~/go/bin
+# GO
+set -gx GOPATH ~/go
+fish_add_path $GOPATH $GOPATH/bin
 
 abbr sf "source ~/.config/fish/config.fish"
 
