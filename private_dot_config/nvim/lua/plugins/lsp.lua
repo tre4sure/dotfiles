@@ -2,8 +2,8 @@ return {
   -- mason
   {
     "williamboman/mason.nvim",
-    opts = {
-      ensure_installed = {
+    opts = function(_, opts)
+      vim.list_extend(opts.ensure_installed, {
         "lua-language-server",
         "stylua",
 
@@ -17,7 +17,6 @@ return {
         "json-to-struct",
         "impl",
         "iferr",
-        "gospel",
         "golines",
         "golangci-lint-langserver",
         "golangci-lint",
@@ -40,31 +39,60 @@ return {
         -- "prettierd",
         "tailwindcss-language-server",
         "vue-language-server",
-      },
-    },
+      })
+    end,
   },
 
   -- lspconfig
   {
     "neovim/nvim-lspconfig",
-    init = function()
-      -- disable lsp watcher. Too slow on linux
-      local ok, wf = pcall(require, "vim.lsp._watchfiles")
-      if ok then
-        wf._watchfunc = function()
-          return function() end
-        end
-      end
-    end,
     opts = {
       inlay_hints = { enabled = true },
-      format = {
-        formatting_options = nil,
-        timeout_ms = 5000,
+      capabilities = {
+        workspace = {
+          didChangeWatchedFiles = {
+            dynamicRegistration = false,
+          },
+        },
       },
+      -- format = {
+      --   formatting_options = nil,
+      --   timeout_ms = 5000,
+      -- },
       servers = {
         html = {},
         cssls = {},
+        tailwindcss = {},
+        tsserver = {
+          -- root_dir = function(...)
+          --   return require("lspconfig.util").root_pattern(".git")(...)
+          -- end,
+          single_file_support = false,
+          settings = {
+            typescript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "literal",
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = false,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+            javascript = {
+              inlayHints = {
+                includeInlayParameterNameHints = "all",
+                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayVariableTypeHints = true,
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayEnumMemberValueHints = true,
+              },
+            },
+          },
+        },
         volar = {
           filetypes = {
             "vue",
@@ -77,97 +105,47 @@ return {
             "json",
           },
         },
+        marksman = {},
       },
       setup = {
         -- ["*"] = function(server, opts) end,
       },
     },
   },
-
-  -- null-ls
-  -- {
-  --   "jose-elias-alvarez/null-ls.nvim",
-  --   opts = function(_, opts)
-  --     local nls = require("null-ls")
-  --     vim.list_extend(opts.sources, {
-  --       -- lua
-  --       nls.builtins.formatting.stylua,
-  --
-  --       -- golang
-  --       nls.builtins.code_actions.gomodifytags,
-  --       nls.builtins.code_actions.impl,
-  --       -- nls.builtins.diagnostics.golangci_lint,
-  --       -- nls.builtins.diagnostics.gospel,
-  --       -- 提示给变量和方法添加注释
-  --       -- nls.builtins.diagnostics.revive,
-  --       -- nls.builtins.diagnostics.staticcheck,
-  --       nls.builtins.formatting.gofmt,
-  --       nls.builtins.formatting.gofumpt,
-  --       nls.builtins.formatting.goimports,
-  --       nls.builtins.formatting.goimports_reviser,
-  --       -- nls.builtins.formatting.golines,
-  --
-  --       -- python
-  --       nls.builtins.formatting.autopep8,
-  --       nls.builtins.diagnostics.flake8,
-  --       -- nls.builtins.diagnostics.pylint,
-  --
-  --       -- jsvascript
-  --       -- nls.builtins.formatting.prettierd.with({ filetypes = { "html", "markdown", "css" } }),
-  --       nls.builtins.code_actions.eslint_d,
-  --       -- nls.builtins.formatting.prettier_eslint,
-  --       nls.builtins.diagnostics.eslint_d,
-  --       nls.builtins.formatting.eslint_d,
-  --     })
-  --   end,
-  -- },
-  --
-  { -- null-ls
-    "nvimtools/none-ls.nvim",
-    dependencies = {
-      "ThePrimeagen/refactoring.nvim",
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      diagnostics = { virtual_text = { prefix = "icons" } },
     },
-    opts = function(_, opts)
-      local nls = require("null-ls")
-
-      vim.list_extend(opts.sources, {
-        -- git
-        -- nls.builtins.diagnostics.commitlint,
-        -- nls.builtins.code_actions.gitrebase,
-
-        -- lua
-        nls.builtins.formatting.stylua,
-
-        -- golang
-        nls.builtins.code_actions.gomodifytags,
-        nls.builtins.code_actions.impl,
-        -- nls.builtins.diagnostics.golangci_lint,
-        -- nls.builtins.diagnostics.gospel,
-        -- 提示给变量和方法添加注释
-        -- nls.builtins.diagnostics.revive,
-        -- nls.builtins.diagnostics.staticcheck,
-        nls.builtins.formatting.gofmt,
-        nls.builtins.formatting.gofumpt,
-        nls.builtins.formatting.goimports,
-        nls.builtins.formatting.goimports_reviser,
-        -- nls.builtins.formatting.golines,
-
-        -- python
-        nls.builtins.formatting.autopep8,
-        nls.builtins.diagnostics.flake8,
-        -- nls.builtins.diagnostics.pylint,
-
-        -- jsvascript
-        -- nls.builtins.formatting.prettierd.with({ filetypes = { "html", "markdown", "css" } }),
-        -- nls.builtins.code_actions.eslint_d,
-        -- nls.builtins.formatting.prettier_eslint,
-        -- nls.builtins.diagnostics.eslint_d,
-        -- nls.builtins.formatting.eslint_d,
-
-        -- misc
-        nls.builtins.code_actions.refactoring,
-      })
-      return opts
-    end,
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        ["markdown"] = { { "prettierd", "prettier" }, "markdownlint" },
+      },
+    },
+  },
+  {
+    "mfussenegger/nvim-lint",
+    opts = {
+      linters_by_ft = {
+        lua = { "selene", "luacheck" },
+        markdown = { "markdownlint" },
+      },
+      linters = {
+        selene = {
+          condition = function(ctx)
+            return vim.fs.find({ "selene.toml" }, { path = ctx.filename, upward = true })[1]
+          end,
+        },
+        luacheck = {
+          condition = function(ctx)
+            return vim.fs.find({ ".luacheckrc" }, { path = ctx.filename, upward = true })[1]
+          end,
+        },
+      },
+    },
   },
 }
